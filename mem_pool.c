@@ -232,6 +232,7 @@ alloc_pt mem_new_alloc(pool_pt pool, size_t size) {
 	{
 		for (int i = 0; i < mgr->pool.num_gaps; i++)
 		{
+			printf("%d\n", (&mgr->gap_ix[i])->node->alloc_record.size);
 			if (mgr->gap_ix[i].size >= size)
 			{
 				newAllocation = (&mgr->gap_ix[i])->node;
@@ -254,6 +255,8 @@ alloc_pt mem_new_alloc(pool_pt pool, size_t size) {
 		pool->num_allocs = pool->num_allocs + 1;
 		pool->alloc_size = pool->alloc_size + size;
 	}
+
+	printf("allocing %d from gap of size %d\n", size, newAllocation->alloc_record.size);
 
 	//Check to see if it is a perfect fit
 	if (newAllocation->alloc_record.size == size)
@@ -534,22 +537,19 @@ static alloc_status _mem_sort_gap_ix(pool_mgr_pt pool_mgr) {
 	//    if the size of the current entry is less than the previous (u - 1)
 	//       swap them (by copying) (remember to use a temporary variable)
 	int length = pool_mgr->pool.num_gaps;
+
 	//In the case that there is only 1 node
 	if (length < 2)
 	{
 		return ALLOC_OK;
 	}
-	for (int currentIndex = length; currentIndex < 1;currentIndex--) {
+	for (int currentIndex = length; currentIndex >= 1;currentIndex--) {
 		//Swap condition
-		if (pool_mgr->gap_ix[currentIndex--].size < pool_mgr->gap_ix[currentIndex].size)
+		if (pool_mgr->gap_ix[currentIndex-1].size <= pool_mgr->gap_ix[currentIndex].size)
 		{
 			gap_t temp = pool_mgr->gap_ix[currentIndex];
-			pool_mgr->gap_ix[currentIndex] = pool_mgr->gap_ix[currentIndex--];
-			pool_mgr->gap_ix[currentIndex--] = temp;
-		}
-		else
-		{
-			return ALLOC_OK;
+			pool_mgr->gap_ix[currentIndex] = pool_mgr->gap_ix[currentIndex-1];
+			pool_mgr->gap_ix[currentIndex-1] = temp;
 		}
 	}
 	return ALLOC_OK;
