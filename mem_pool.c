@@ -232,7 +232,6 @@ alloc_pt mem_new_alloc(pool_pt pool, size_t size) {
 	{
 		for (int i = 0; i < mgr->pool.num_gaps; i++)
 		{
-			printf("%d\n", (&mgr->gap_ix[i])->node->alloc_record.size);
 			if (mgr->gap_ix[i].size >= size)
 			{
 				newAllocation = (&mgr->gap_ix[i])->node;
@@ -255,8 +254,6 @@ alloc_pt mem_new_alloc(pool_pt pool, size_t size) {
 		pool->num_allocs = pool->num_allocs + 1;
 		pool->alloc_size = pool->alloc_size + size;
 	}
-
-	printf("allocing %d from gap of size %d\n", size, newAllocation->alloc_record.size);
 
 	//Check to see if it is a perfect fit
 	if (newAllocation->alloc_record.size == size)
@@ -339,13 +336,11 @@ alloc_status mem_del_alloc(pool_pt pool, alloc_pt alloc) {
 
 	node_pt next = cursor->next;
 	if ((next != NULL) && (next->allocated == 0)){
-		printf("merged forward\n");
 		//check success
 		if (_mem_remove_from_gap_ix(manager, next->alloc_record.size, next) == ALLOC_FAIL){
 			return ALLOC_FAIL;
 		}
 
-		printf("%d %d \n", next->alloc_record.size, cursor->alloc_record.size);
 		cursor->alloc_record.size = next->alloc_record.size + cursor->alloc_record.size;
 
 		if (cursor->next != NULL) {cursor->next->used = 0;}
@@ -387,14 +382,12 @@ alloc_status mem_del_alloc(pool_pt pool, alloc_pt alloc) {
 	// check success
 	node_pt prev = cursor->prev;
 	if ((prev != NULL) && (prev->allocated == 0)){
-		//printf("merged backward\n");
 		if (_mem_remove_from_gap_ix(manager, prev->alloc_record.size, prev) == ALLOC_FAIL){
 			return ALLOC_FAIL;
 		}
 
 		//check success
 
-		//printf("%d %d \n", prev->alloc_record.size, cursor->alloc_record.size);
 		prev->alloc_record.size = prev->alloc_record.size + cursor->alloc_record.size;
 		cursor->used = 0;
 
