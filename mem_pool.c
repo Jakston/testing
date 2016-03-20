@@ -545,7 +545,9 @@ static alloc_status _mem_sort_gap_ix(pool_mgr_pt pool_mgr) {
 	}
 	for (int currentIndex = length; currentIndex >= 1;currentIndex--) {
 		//Swap condition
-		if (pool_mgr->gap_ix[currentIndex-1].size <= pool_mgr->gap_ix[currentIndex].size)
+		if (pool_mgr->gap_ix[currentIndex-1].size < pool_mgr->gap_ix[currentIndex].size
+				|| (pool_mgr->gap_ix[currentIndex-1].size == pool_mgr->gap_ix[currentIndex].size
+				&& pool_mgr->gap_ix[currentIndex-1].node->alloc_record.mem < pool_mgr->gap_ix[currentIndex].node->alloc_record.mem))
 		{
 			gap_t temp = pool_mgr->gap_ix[currentIndex];
 			pool_mgr->gap_ix[currentIndex] = pool_mgr->gap_ix[currentIndex-1];
