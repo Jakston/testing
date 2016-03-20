@@ -215,7 +215,7 @@ alloc_pt mem_new_alloc(pool_pt pool, size_t size) {
 		while (newAllocation != NULL && (found == 0))						//Try to find an empty node in the heap that isn't being used
 		{
 			length = length + 1;
-			if (newAllocation->allocated == 0 && newAllocation->used == 1)	//If the node is not being used, select it
+			if (newAllocation->allocated == 0 && newAllocation->used == 1 && newAllocation->alloc_record.size >= size)	//If the node is not being used, select it
 			{
 				found = 1;
 			} else {

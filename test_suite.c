@@ -64,8 +64,10 @@ static void check_pool(pool_pt pool, const pool_segment_pt exp) {
     assert_int_not_equal(size, 0);
 
 #ifdef INSPECT_POOL
-    for (unsigned u = 0; u < size; u ++)
+    for (unsigned u = 0; u < size; u ++) {
+        printf("%10lu - %s\t", (unsigned long) exp[u].size, (exp[u].allocated) ? "alloc" : "gap");
         printf("%10lu - %s\n", (unsigned long) segs[u].size, (segs[u].allocated) ? "alloc" : "gap");
+    }
 #endif
 
     assert_memory_equal(exp, segs, size * sizeof(pool_segment_t));
